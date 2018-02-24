@@ -1,0 +1,22 @@
+nova.conf:
+  DEFAULT:
+    my_ip: NO_BIND_IP
+    osapi_compute_listen: NO_BIND_IP
+    metadata_listen: NO_BIND_IP
+    transport_url: NO_TRANSPORT_URL
+  cache:
+    memcache_servers: NO_MEMCACHE_SERVERS
+  neutron:
+    auth_type: NO_OS_AUTH_TYPE
+    region_name: NO_OS_REGION_NAME
+    user_domain_name: NO_OS_USER_DOMAIN_NAME
+    project_name: NO_OS_PROJECT_NAME
+    project_domain_name: NO_OS_PROJECT_DOMAIN_NAME
+    ovs_bridge: NO_OVS_BRIDGE
+    metadata_proxy_shared_secret: NO_METADATA_SHARED_SECRET
+    password: NO_NEUTRON_PASSWORD
+    username: NO_NEUTRON_USERNAME
+    auth_url: NO_OS_AUTH_URL
+    url: NO_NEUTRON_API
+  cinder:
+    os_region_name: NO_OS_REGION_NAME
