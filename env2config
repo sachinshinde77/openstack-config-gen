@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+
+import argparse
+import configparser
+import os
+import yaml
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mapping_file', help='yaml style mapping file')
+    parser.add_argument('--dest-dir', help='Destination directory for configs')
+    return parser.parse_args()
+
+
+def usage():
+    print('usage: init_config <yaml mappings file>')
+
+
+def get_env_var(var):
+    return os.environ.get(var)
+
+
+def map_section(section_name, section_dict, config_parser):
+    if (not config_parser.has_section(section_name)
+            and section_name != configparser.DEFAULTSECT):
+        config_parser.add_section(section_name)
+    for k in section_dict.keys():
+        val = get_env_var(section_dict[k])
+        if val:
+            config_parser.set(section_name, k, val)
+
+
+def map_config_file(filename, config_sections, config_parser):
+    for section in config_sections:
+        map_section(section, config_sections[section], config_parser)
+
+
+def write_configs(config_file_parsers, dest_dir=None):
+    for fname, config_parser in config_file_parsers:
+        if dest_dir:
+            fname = dest_dir + '/' + fname
+        with open(fname, 'wb') as file:
+            config_parser.write(file)
+
+
+def get_config_file_parsers(mappings):
+    config_file_parsers = []
+    for config_file in mappings.keys():
+        config_parser = configparser.RawConfigParser()
+        map_config_file(config_file, mappings[config_file], config_parser)
+        config_file_parsers.append((config_file, config_parser))
+    return config_file_parsers
+
+
+def get_mappings(mapping_file_name):
+    with open(mapping_file_name, 'r') as mapping_file:
+        return yaml.load(mapping_file)
+
+
+def main():
+    args = parse_args()
+    mapping_file_name = args.mapping_file
+    dest_dir = args.dest_dir or os.getcwd()
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    mappings = get_mappings(mapping_file_name)
+    write_configs(get_config_file_parsers(mappings), dest_dir=dest_dir)
+
+
+if __name__ == "__main__":
+    main()
